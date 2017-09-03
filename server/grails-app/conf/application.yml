@@ -2,7 +2,7 @@
 grails:
     profile: react
     codegen:
-        defaultPackage: space.trip
+        defaultPackage: pl.mb
     spring:
         transactionManagement:
             proxies: false
