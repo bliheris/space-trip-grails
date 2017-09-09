@@ -28,6 +28,14 @@ class User implements Serializable {
     }
 
     static mapping = {
+        table 'users'
 	    password column: '`password`'
     }
+
+//    static mapping = {
+//
+//        password type: 'text'
+//        id name: 'username', generator: 'assigned'
+//        version false
+//    }
 }

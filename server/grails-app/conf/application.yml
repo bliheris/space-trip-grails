@@ -79,18 +79,31 @@ hibernate:
         use_second_level_cache: false
         use_query_cache: false
 
+#dataSource:
+#    pooled: true
+#    jmxExport: true
+#    driverClassName: org.h2.Driver
+#    username: sa
+#    password: ''
+
 dataSource:
-    pooled: true
-    jmxExport: true
-    driverClassName: org.h2.Driver
-    username: sa
-    password: ''
+    dbCreate: create-drop
+    driverClassName: org.postgresql.Driver
+    dialect: org.hibernate.dialect.PostgreSQLDialect
+    username: spacetripadmin
+    password: spacetrip
+    url: jdbc:postgresql://localhost:5432/spacetripgrails
 
 environments:
     development:
         dataSource:
-            dbCreate: create-drop
-            url: jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
+#            dbCreate: create-drop
+#            driverClassName: org.postgresql.Driver
+#            dialect: org.hibernate.dialect.PostgreSQLDialect
+#            username: spacetripadmin
+#            password: spacetrip
+            url: jdbc:postgresql://localhost:5432/spacetripgrails
+            #url: jdbc:h2:mem:devDb;MVCC=TRUE;LOCK_TIMEOUT=10000;DB_CLOSE_ON_EXIT=FALSE
     test:
         dataSource:
             dbCreate: update
