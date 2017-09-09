@@ -1,4 +1,4 @@
-package space.trip
+package pl.mb
 
 class UrlMappings {
 

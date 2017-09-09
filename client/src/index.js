@@ -5,7 +5,14 @@ import './css/App.css';
 import './css/grails.css';
 import './css/main.css';
 
+import Garage from './garage'
+
 ReactDOM.render(
-  <App />,
-  document.getElementById('root')
-);
+    <Garage />,
+    document.getElementById('root')
+)
+
+// ReactDOM.render(
+//   <App />,
+//   document.getElementById('root')
+// );

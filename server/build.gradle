@@ -13,7 +13,7 @@ buildscript {
 }
 
 version "0.1"
-group "space.trip"
+group "pl.mb"
 
 apply plugin:"eclipse"
 apply plugin:"idea"

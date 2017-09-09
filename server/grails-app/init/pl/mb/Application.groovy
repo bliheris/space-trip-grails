@@ -1,4 +1,4 @@
-package space.trip
+package pl.mb
 
 import grails.boot.GrailsApp
 import grails.boot.config.GrailsAutoConfiguration
