@@ -2,8 +2,6 @@ import React from 'react';
 import 'whatwg-fetch';
 
 import { Row, Jumbotron, Button } from 'react-bootstrap';
-import { SERVER_URL } from './config';
-import headers from './security/headers';
 
 import http from './http'
 

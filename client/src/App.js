@@ -1,12 +1,25 @@
 import React, {Component} from 'react';
-import Garage from './garage';
+
 import Auth from './security/auth';
-import Login from './Login';
-import {Grid} from 'react-bootstrap';
+
+import {
+    Grid,
+    Row,
+    Navbar,
+    Nav,
+    NavItem,
+    NavDropdown,
+    MenuItem,
+    Button,
+} from 'react-bootstrap';
 import {SERVER_URL} from './config';
 import {defaultErrorHandler} from './handlers/errorHandlers';
 import {checkResponseStatus, loginResponseHandler} from './handlers/responseHandlers';
 import 'whatwg-fetch';
+
+import Login from './Login';
+import Garage from './garage';
+import Trips from './trips/TripsContainer'
 
 class App extends Component {
 
@@ -42,7 +55,7 @@ class App extends Component {
 
         (async () => {
             if (await Auth.loggedIn()) {
-                this.setState({route: 'garage'})
+                this.setState({route: 'trips'})
             } else {
                 this.setState({route: 'login'});
             }
@@ -88,7 +101,7 @@ class App extends Component {
 
     //tag::handler[]
     customLoginHandler = () => {
-        this.setState({route: 'garage'});
+        this.setState({route: 'trips'});
     };
 
     customErrorHandler = (error) => {
@@ -97,6 +110,9 @@ class App extends Component {
     };
     //end::handler[]
 
+    changeRoute = route => () => {
+        this.setState({ route })
+    }
 
     //tag::logout[]
     logoutHandler = () => {
@@ -110,6 +126,8 @@ class App extends Component {
     contentForRoute() {
         const {error, userDetails, route} = this.state;
 
+        console.log('route', route)
+
         const loginContent = <Login error={error}
                                     userDetails={userDetails}
                                     inputChangeHandler={this.inputChangeHandler}
@@ -117,9 +135,13 @@ class App extends Component {
 
         const garageContent = <Garage logoutHandler={this.logoutHandler}/>;
 
+        const tripsContent = <Trips/>
+
         switch (route) {
             case 'login':
                 return loginContent;
+            case 'trips':
+                return tripsContent;
             case 'garage':
                 return garageContent;
             default:
@@ -132,6 +154,20 @@ class App extends Component {
 
         return (
             <Grid>
+
+                <Navbar inverse>
+                    <Navbar.Header>
+                        <Navbar.Brand>
+                            <a href="#">SpaceTrip</a>
+                        </Navbar.Brand>
+                    </Navbar.Header>
+                    <Nav>
+                        <NavItem eventKey={1} onClick={this.changeRoute('trips')}>Trips</NavItem>
+                        <NavItem eventKey={2} onClick={this.changeRoute('garage')}>Vehicles</NavItem>
+                        <Button bsStyle="warning" className="pull-right" onClick={this.logoutHandler} >Log Out</Button>
+                    </Nav>
+                </Navbar>
+
                 {content}
             </Grid>
         );

@@ -5,7 +5,7 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.rest.Resource
 
 @GrailsCompileStatic
-@Secured(['ROLE_DRIVER'])
+@Secured(['ROLE_USER'])
 @Resource(uri = '/api/driver')
 class Driver extends User {
 
