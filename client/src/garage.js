@@ -5,6 +5,8 @@ import { Row, Jumbotron, Button } from 'react-bootstrap';
 import { SERVER_URL } from './config';
 import headers from './security/headers';
 
+import http from './http'
+
 import Vehicles from './vehicles';
 import AddVehicleForm from './AddVehicleForm'
 
@@ -23,37 +25,35 @@ class Garage extends React.Component {
     }
 
     componentDidMount() {
-        fetch(`${SERVER_URL}/api/vehicle`, { method: 'GET', headers: headers() })
-            .then(r => r.json())
-            .then(json => this.setState({vehicles: json}))
-            .catch(error => console.error('Error retrieving vehicles: ' + error));
+        http.get('vehicle')
+            .then(json => {
+                this.setState({vehicles: json})
+            })
 
-        fetch(`${SERVER_URL}/api/make`, { method: 'GET', headers: headers() })
-            .then(r => r.json())
-            .then(json => this.setState({makes: json}))
+        http.get('make')
+            .then(json => {
+                this.setState({makes: json})
+            })
 
-        fetch(`${SERVER_URL}/api/model`, { method: 'GET', headers: headers() })
-            .then(r => r.json())
-            .then(json => this.setState({models: json}))
+        http.get('model')
+            .then(json => {
+                this.setState({models: json})
+            })
 
-        fetch(`${SERVER_URL}/api/driver`, { method: 'GET', headers: headers() })
-            .then(r => r.json())
-            .then(json => this.setState({drivers: json}))
+        http.get('driver')
+            .then(json => {
+                this.setState({drivers: json})
+            })
     }
 
     submitNewVehicle = vehicle => {
-        fetch(`${SERVER_URL}/api/vehicle`, {
-            method: 'POST',
-            headers: headers(),
-            body: JSON.stringify(vehicle)
-        }).then(r => r.json())
+        http.post('vehicle', vehicle)
             .then(json => {
                 let vehicles = this.state.vehicles;
                 vehicles.push({id: json.id, name: json.name, make: json.make, model: json.model, driver: json.driver});
                 this.setState({vehicles});
             })
-            .catch(ex => console.error('Unable to save vehicle', ex));
-    };
+    }
 
     render() {
         const {vehicles, makes, models, drivers} = this.state;
