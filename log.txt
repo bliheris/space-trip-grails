@@ -1,0 +1,9 @@
+Problem 3.2.0.M1 doesnt work with grails 3.2.8 - ClassNotFoundException: RenderConverterTrait
+Links:
+https://github.com/grails-plugins/grails-spring-security-core/issues/495
+https://stackoverflow.com/questions/44328399/classnotfoundexception-org-grails-compiler-web-converters-renderconvertertrait?rq=1
+https://stackoverflow.com/questions/46063225/grails-app-does-not-start-applicationeventmulticaster-not-initialized
+https://github.com/grails/grails-core/issues/10395
+
+Solution: albo zmienić versję Spring Security na 3.2.1 albo wersję grailsów do 3.3.0
+

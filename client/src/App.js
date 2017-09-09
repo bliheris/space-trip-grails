@@ -1,73 +1,142 @@
-import React, { Component } from 'react';
-import { Grid } from 'react-bootstrap';
-import AppNav from './AppNav';
-
-import grailsLogo from './images/grails-cupsonly-logo-white.svg';
-import reactLogo from './images/logo.svg';
-import { SERVER_URL, CLIENT_VERSION, REACT_VERSION } from './config';
+import React, {Component} from 'react';
+import Garage from './garage';
+import Auth from './security/auth';
+import Login from './Login';
+import {Grid} from 'react-bootstrap';
+import {SERVER_URL} from './config';
+import {defaultErrorHandler} from './handlers/errorHandlers';
+import {checkResponseStatus, loginResponseHandler} from './handlers/responseHandlers';
 import 'whatwg-fetch';
 
 class App extends Component {
 
-  constructor() {
-    super();
+    //tag::state[]
+    constructor() {
+        super();
 
-    this.state = {
-      serverInfo: {},
-      clientInfo: {
-        version: CLIENT_VERSION,
-        react: REACT_VERSION
-      }
+        this.state = {
+            userDetails: {
+                username: '',
+                password: ''
+            },
+            route: '',
+            error: null
+        }
     }
-  }
 
-  componentDidMount() {
-    fetch(SERVER_URL + '/application')
-      .then(r => r.json())
-      .then(json => this.setState({serverInfo: json}))
-      .catch(error => console.error('Error connecting to server: ' + error));
+    reset = () => {
+        this.setState({
+            userDetails: {
+                username: '',
+                password: ''
+            },
+            route: 'login',
+            error: null
+        });
+    };
+    //end::state[]
 
-  }
+    //tag::lifecycle[]
+    componentDidMount() {
+        console.log('app mounting...');
 
-  render() {
-    const serverInfo = this.state.serverInfo;
-    const clientInfo = this.state.clientInfo;
+        (async () => {
+            if (await Auth.loggedIn()) {
+                this.setState({route: 'garage'})
+            } else {
+                this.setState({route: 'login'});
+            }
+        })();
+    }
 
-    return (
-      <div>
-        <AppNav serverInfo={serverInfo} clientInfo={clientInfo}/>
-        <div className="grails-logo-container">
-          <img className="grails-logo" src={grailsLogo} alt="Grails" />
-          <span className="plus-logo">+</span>
-          <img className="hero-logo" src={reactLogo} alt="React" />
-        </div>
+    componentDidUpdate() {
+        if (this.state.route !== 'login' && !Auth.loggedIn()) {
+            this.setState({route: 'login'})
+        }
+    }
+    //end::lifecycle[]
 
-        <Grid>
-          <div id="content">
-            <section className="row colset-2-its">
-              <h1 style={{textAlign: 'center'}}>Welcome to Grails</h1>
-              <br/>
-              <p>
-                Congratulations, you have successfully started your first Grails + React application! While in development mode, changes will be loaded automatically when you edit your React app, without even refreshing the page.
-                Below is a list of controllers that are currently deployed in
-                this application, click on each to execute its default action:
-              </p>
+    //tag::inputChangeHandler[]
+    inputChangeHandler = (event) => {
+        let {userDetails} = this.state;
+        const target = event.target;
 
-              <div id="controllers" role="navigation">
-                <h2>Available Controllers:</h2>
-                <ul>
-                  {serverInfo.controllers ? serverInfo.controllers.map(controller => {
-                    return <li key={controller.name}><a href={SERVER_URL + controller.logicalPropertyName}>{ controller.name }</a></li>;
-                  }) : null }
-                </ul>
-              </div>
-            </section>
+        userDetails[target.name] = target.value;
 
-          </div>
-        </Grid>
-      </div>
-    );
-  }
+        this.setState({userDetails});
+    };
+    //end::inputChangeHandler[]
+
+    //tag::login[]
+    login = (e) => {
+        console.log('login');
+        console.log(JSON.stringify(this.state.userDetails));
+        e.preventDefault();
+
+        fetch(`${SERVER_URL}/api/login`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(this.state.userDetails)
+        }).then(checkResponseStatus)
+            .then(response => loginResponseHandler(response, this.customLoginHandler))
+            .catch(error => defaultErrorHandler(error, this.customErrorHandler));
+    };
+    //end::login[]
+
+    //tag::handler[]
+    customLoginHandler = () => {
+        this.setState({route: 'garage'});
+    };
+
+    customErrorHandler = (error) => {
+        this.reset();
+        this.setState({error: error.message});
+    };
+    //end::handler[]
+
+
+    //tag::logout[]
+    logoutHandler = () => {
+        Auth.logOut();
+        this.reset();
+    };
+    //end::logout[]
+
+
+    //tag::routing[]
+    contentForRoute() {
+        const {error, userDetails, route} = this.state;
+
+        const loginContent = <Login error={error}
+                                    userDetails={userDetails}
+                                    inputChangeHandler={this.inputChangeHandler}
+                                    onSubmit={this.login}/>;
+
+        const garageContent = <Garage logoutHandler={this.logoutHandler}/>;
+
+        switch (route) {
+            case 'login':
+                return loginContent;
+            case 'garage':
+                return garageContent;
+            default:
+                return <p>Loading...</p>;
+        }
+    };
+
+    render() {
+        const content = this.contentForRoute();
+
+        return (
+            <Grid>
+                {content}
+            </Grid>
+        );
+    };
+    //end::routing[]
 }
 
 export default App;

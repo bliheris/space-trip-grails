@@ -1,6 +1,10 @@
 import React from 'react';
 import 'whatwg-fetch';
 
+import { Row, Jumbotron, Button } from 'react-bootstrap';
+import { SERVER_URL } from './config';
+import headers from './security/headers';
+
 import Vehicles from './vehicles';
 import AddVehicleForm from './AddVehicleForm'
 
@@ -18,10 +22,29 @@ class Garage extends React.Component {
         }
     }
 
+    componentDidMount() {
+        fetch(`${SERVER_URL}/api/vehicle`, { method: 'GET', headers: headers() })
+            .then(r => r.json())
+            .then(json => this.setState({vehicles: json}))
+            .catch(error => console.error('Error retrieving vehicles: ' + error));
+
+        fetch(`${SERVER_URL}/api/make`, { method: 'GET', headers: headers() })
+            .then(r => r.json())
+            .then(json => this.setState({makes: json}))
+
+        fetch(`${SERVER_URL}/api/model`, { method: 'GET', headers: headers() })
+            .then(r => r.json())
+            .then(json => this.setState({models: json}))
+
+        fetch(`${SERVER_URL}/api/driver`, { method: 'GET', headers: headers() })
+            .then(r => r.json())
+            .then(json => this.setState({drivers: json}))
+    }
+
     submitNewVehicle = vehicle => {
-        fetch('http://localhost:8080/vehicle', {
+        fetch(`${SERVER_URL}/api/vehicle`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: headers(),
             body: JSON.stringify(vehicle)
         }).then(r => r.json())
             .then(json => {
@@ -32,39 +55,23 @@ class Garage extends React.Component {
             .catch(ex => console.error('Unable to save vehicle', ex));
     };
 
-    componentDidMount() {
-        fetch('http://localhost:8080/vehicle')
-            .then(r => r.json())
-            .then(json => this.setState({vehicles: json}))
-            .catch(error => console.error('Error retrieving vehicles: ' + error));
-
-        fetch('http://localhost:8080/make')
-            .then(r => r.json())
-            .then(json => this.setState({makes: json}))
-
-        fetch('http://localhost:8080/model')
-            .then(r => r.json())
-            .then(json => this.setState({models: json}))
-
-        fetch('http://localhost:8080/driver')
-            .then(r => r.json())
-            .then(json => this.setState({drivers: json}))
-    }
-
     render() {
         const {vehicles, makes, models, drivers} = this.state;
 
-        return (
-            <div>
-                <AddVehicleForm
-                    onSubmit={this.submitNewVehicle}
-                    makes={makes}
-                    models={models}
-                    drivers={drivers}
-                />
+        const logoutButton = <Button bsStyle="warning" className="pull-right" onClick={this.props.logoutHandler} >Log Out</Button>;
+
+        return <Row>
+            <Jumbotron>
+                <h1>Welcome to the Garage</h1>
+                {logoutButton}
+            </Jumbotron>
+            <Row>
+                <AddVehicleForm onSubmit={this.submitNewVehicle} makes={makes} models={models} drivers={drivers}/>
+            </Row>
+            <Row>
                 <Vehicles vehicles={vehicles} />
-            </div>
-        )
+            </Row>
+        </Row>;
     }
 }
 

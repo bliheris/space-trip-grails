@@ -6,7 +6,7 @@ import grails.rest.Resource
 
 @GrailsCompileStatic
 @Secured(['ROLE_DRIVER'])
-@Resource(uri = '/driver')
+@Resource(uri = '/api/driver')
 class Driver extends User {
 
     String name

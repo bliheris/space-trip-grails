@@ -6,7 +6,7 @@ import groovy.transform.CompileStatic
 
 @CompileStatic
 @Secured(['ROLE_DRIVER'])
-@Resource(uri = '/vehicle')
+@Resource(uri = '/api/vehicle')
 class Vehicle {
 
     String name

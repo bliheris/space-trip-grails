@@ -6,7 +6,7 @@ import groovy.transform.CompileStatic
 
 @CompileStatic
 @Secured(['ROLE_DRIVER'])
-@Resource(uri = '/make')
+@Resource(uri = '/api/make')
 class Make {
 
     String name
